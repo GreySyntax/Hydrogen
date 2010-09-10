@@ -11,28 +11,39 @@
 namespace hydrogen;
 
 function load($namespace) {
-	$splitpath = explode('\\', $namespace);
-	$path = '';
-	$name = '';
-	$firstword = true;
-	for ($i = 0; $i < count($splitpath); $i++) {
-		if ($splitpath[$i] && !$firstword) {
-			if ($i == count($splitpath) - 1)
-				$name = $splitpath[$i];
-			else
-				$path .= DIRECTORY_SEPARATOR . $splitpath[$i];
-		}
-		if ($splitpath[$i] && $firstword) {
-			if ($splitpath[$i] != __NAMESPACE__)
-				break;
-			$firstword = false;
+	$path_args = explode ( '\\', $namespace );
+	$path_count = count ( $path_args );
+	$ns_path = explode('\\', $namespace); //define BASE in your root path
+
+	for($i = 0; $i < $path_count; $i ++) {
+		$ns_path .= $path_args[$i];
+		
+		if (! (($i + 1) == $path_count)) {
+			$ns_path .= '/';
 		}
 	}
-	if (!$firstword) {
-		$fullpath = __DIR__ . $path . DIRECTORY_SEPARATOR . $name . '.php';
-		return include_once($fullpath);
+	
+	$loc = $ns_path;
+	
+	if ( is_dir( $loc ) && !is_dir( $loc . '.php' ) ) {
+		//Requre all files in directory ending with ".php"
+		$scripts = array();
+		
+		//glob is faster than readdir etc, so why not!
+		foreach ( glob( $lock . '/*.php' ) as $f ) {
+			$scripts[] = $f;
+		}
+		
+		if ( is_array( $scripts ) && count( $scripts ) > 0 ) {
+			foreach ( $scripts as $f ) {
+				loadPath( $loc . $f );	
+			}
+		}
+		return;
 	}
-	return false;
+	
+	loadPath($loc . '.php');
+	return;
 }
 
 function loadPath($absPath) {

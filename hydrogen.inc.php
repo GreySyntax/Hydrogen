@@ -30,7 +30,7 @@ function load($namespace) {
 		$scripts = array();
 		
 		//glob is faster than readdir etc, so why not!
-		foreach ( glob( $lock . '/*.php' ) as $f ) {
+		foreach ( glob( $loc . '/*.php' ) as $f ) {
 			$scripts[] = $f;
 		}
 		
